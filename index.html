@@ -1545,7 +1545,7 @@ function openHelp(){
   <h4>형번 풀이 (HSR · SHS · SSR · SRS)</h4>
   <ul><li>고객이 보낸 전체 형번(<code>HSR25A2SSC1+1240LP-II</code>)을 붙여 넣으면 블록 종류·씰·예압·레일 길이·정도를 기호별로 풀어 줍니다.</li><li>카탈로그 규격에 없는 조합(예: SSR의 C0, 표준 길이 초과)은 <b>확인 필요</b>로 표시됩니다.</li></ul>
   ${web ? `<h4>휴대폰에서</h4>
-  <ul><li>크롬은 ⋮ → 「홈 화면에 추가」, 삼성 인터넷은 ≡ → 「현재 페이지 추가」, 아이폰은 사파리의 공유 버튼 → 「홈 화면에 추가」를 누르면 앱처럼 바로 열립니다. 카톡에서 열었다면 먼저 「다른 브라우저로 열기」를 하세요.</li><li>비밀번호는 창(앱)을 닫을 때까지 유지됩니다. 처음 열 때 자료(약 11 MB)를 받으므로 와이파이에서 한 번 열어 두면 이후 빠릅니다. 원본 그림·PDF는 볼 때만 받습니다.</li></ul>` : ''}
+  <ul><li>크롬은 ⋮ → 「홈 화면에 추가」, 삼성 인터넷은 ≡ → 「현재 페이지 추가」, 아이폰은 사파리의 공유 버튼 → 「홈 화면에 추가」를 누르면 앱처럼 바로 열립니다. 카톡에서 열었다면 먼저 「다른 브라우저로 열기」를 하세요.</li><li>비밀번호는 한 번 넣으면 그 기기에서 30일 동안 기억합니다. 처음 열 때 자료(약 11 MB)를 받으므로 와이파이에서 한 번 열어 두면 이후 빠릅니다. 원본 그림·PDF는 볼 때만 받습니다.</li></ul>` : ''}
   <p class="hint" style="margin:0">숫자는 PDF에서 자동으로 읽은 값입니다. 견적·납품 전에는 근거 페이지의 원본 숫자와 대조해 주세요. 같은 형번이라도 구판·국산(삼익THK) 카탈로그마다 값이 다를 수 있습니다.</p>
   </div></div>`;
   m.hidden = false;
@@ -1631,7 +1631,7 @@ addEventListener('resize', () => { if(curView!=null) document.body.classList.tog
 /* ===== 접근 비밀번호 (SHA-256 해시 비교, 원본 비밀번호는 소스에 없음) ===== */
 const PW_HASH = 'cb7593a6adb4b6339f9b0d794acc8903819db9e7c57624a3f0961d085b231999';
 async function sha256(t){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join(''); }
-function authed(){ try{ return sessionStorage.getItem('thk_auth')==='1'; }catch(e){ return false; } }
+function authed(){ try{ if(sessionStorage.getItem('thk_auth')==='1') return true; const t = +localStorage.getItem('thk_auth_t'); return t>0 && Date.now()-t < 30*864e5; }catch(e){ return false; } }
 function openGate(){ const g = $('#gate'); if(g) g.remove(); load(); }
 if(authed()) openGate();
 else {
@@ -1639,7 +1639,7 @@ else {
   $('#gate-f').addEventListener('submit', async e => {
     e.preventDefault();
     const v = $('#gate-pw').value.trim();
-    if(await sha256(v) === PW_HASH){ try{ sessionStorage.setItem('thk_auth','1'); }catch(_){} openGate(); }
+    if(await sha256(v) === PW_HASH){ try{ sessionStorage.setItem('thk_auth','1'); localStorage.setItem('thk_auth_t', String(Date.now())); }catch(_){} openGate(); }
     else { $('#gate-err').textContent = '비밀번호가 틀렸습니다.'; $('#gate-pw').select(); }
   });
 }
