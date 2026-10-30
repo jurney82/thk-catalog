@@ -5,26 +5,34 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>THK 카탈로그 검색</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1a6fc4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="THK 검색">
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
 <style>
 /* Layout: sticky search rail on top; results column + page viewer side by side on wide screens, viewer as full-screen sheet on phones */
 :root{
-  --bg:#eef1f3; --surface:#ffffff; --sunk:#f6f8f9; --ink:#14202b; --muted:#5a6876; --line:#d5dce2;
-  --accent:#0b6b74; --accent-ink:#ffffff; --accent-soft:#dcefef; --mark:#ffd34d66; --hl:#ffcf2e; --warn:#9a5b00; --warn-soft:#fff2d6;
+  --bg:#eaf4fc; --surface:#ffffff; --sunk:#f3f8fd; --ink:#0f2238; --muted:#52677d; --line:#cddfee;
+  --accent:#1a6fc4; --accent-ink:#ffffff; --accent-soft:#dcebfa; --mark:#ffd34d66; --hl:#ffcf2e; --warn:#9a5b00; --warn-soft:#fff2d6;
   --ok:#1d7a46; --bad:#b3261e;
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
   --r:6px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0e1317; --surface:#151c22; --sunk:#10161b; --ink:#e4eaee; --muted:#93a1ad; --line:#26323b;
-  --accent:#4fb8c1; --accent-ink:#06191b; --accent-soft:#163a3e; --mark:#ffcc3340; --hl:#ffcf2e; --warn:#f0b45a; --warn-soft:#3a2a10;
+  --bg:#0c1622; --surface:#122030; --sunk:#0e1a27; --ink:#e3edf6; --muted:#90a4b8; --line:#22374b;
+  --accent:#6db8f2; --accent-ink:#04182b; --accent-soft:#143552; --mark:#ffcc3340; --hl:#ffcf2e; --warn:#f0b45a; --warn-soft:#3a2a10;
   --ok:#5cc98a; --bad:#ff8a80; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e1317; --surface:#151c22; --sunk:#10161b; --ink:#e4eaee; --muted:#93a1ad; --line:#26323b;
-  --accent:#4fb8c1; --accent-ink:#06191b; --accent-soft:#163a3e; --mark:#ffcc3340; --hl:#ffcf2e; --warn:#f0b45a; --warn-soft:#3a2a10;
+  --bg:#0c1622; --surface:#122030; --sunk:#0e1a27; --ink:#e3edf6; --muted:#90a4b8; --line:#22374b;
+  --accent:#6db8f2; --accent-ink:#04182b; --accent-soft:#143552; --mark:#ffcc3340; --hl:#ffcf2e; --warn:#f0b45a; --warn-soft:#3a2a10;
   --ok:#5cc98a; --bad:#ff8a80; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -35,7 +43,7 @@ button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:inset 0 3px 0 var(--accent)}
 .bar{grid-template-columns:minmax(0,1fr);max-width:1280px;margin:0 auto;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:10px}
 .brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .brand h1{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em}
@@ -186,15 +194,15 @@ pre.txt{margin:10px 0 0;font-family:var(--f-mono);font-size:12px;line-height:1.5
 .pobtn:disabled{opacity:.6;cursor:wait}
 #print-sheet{display:none}
 .ps{width:182mm;color:#111;background:#fff;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:10.5pt;line-height:1.5}
-.ps .ps-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #0b6b74;padding-bottom:6px;margin-bottom:10px}
-.ps .ps-co{font-size:17pt;font-weight:800;color:#0b6b74;letter-spacing:-.02em}
+.ps .ps-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #1a6fc4;padding-bottom:6px;margin-bottom:10px}
+.ps .ps-co{font-size:17pt;font-weight:800;color:#1a6fc4;letter-spacing:-.02em}
 .ps .ps-title{font-size:12pt;font-weight:700;text-align:right}
 .ps table{border-collapse:collapse;width:100%;margin:4px 0 10px}
 .ps th,.ps td{border:1px solid #c9d2d8;padding:5px 8px;text-align:left;vertical-align:top;font-size:9.5pt}
-.ps th{background:#eef4f5;font-weight:700;white-space:nowrap;width:1%}
+.ps th{background:#eaf3fc;font-weight:700;white-space:nowrap;width:1%}
 .ps .ps-meta td{width:34%}
-.ps h3{font-size:11pt;margin:12px 0 4px;color:#0b6b74}
-.ps .ps-ver{background:#eef4f5;border-radius:4px;padding:8px 10px;font-size:10.5pt}
+.ps h3{font-size:11pt;margin:12px 0 4px;color:#1a6fc4}
+.ps .ps-ver{background:#eaf3fc;border-radius:4px;padding:8px 10px;font-size:10.5pt}
 .ps .ps-step{border:1px solid #c9d2d8;border-radius:4px;padding:6px 10px;margin:0 0 6px;break-inside:avoid}
 .ps .ps-step h4{margin:0 0 3px;font-size:10pt;display:flex;justify-content:space-between;gap:8px}
 .ps .ps-step h4 span{font-weight:500;color:#555;font-size:9pt;white-space:nowrap}
@@ -232,6 +240,7 @@ td.ck input{width:18px;height:18px;cursor:pointer;margin:0}
 .dect td.m{white-space:nowrap}
 .sbtn,#po-reply,#cmp-reply,#dec-reply{height:40px;padding:0 16px;border:1.5px solid var(--accent);border-radius:var(--r);background:var(--surface);color:var(--accent);font-weight:700;font-size:14px;cursor:pointer}
 #dec .chip{cursor:pointer}
+footer .rights{margin-top:6px;color:var(--ink);font-weight:500}
 .helpbtn{border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:600;cursor:pointer;margin-left:2px}
 .helpc{display:grid;gap:10px;font-size:14px;line-height:1.6}.helpc h4{margin:6px 0 0;font-size:14px}.helpc ul{margin:0;padding-left:18px}.helpc li{margin:2px 0}.helpc code{font-family:var(--f-mono);background:var(--sunk);padding:0 4px;border-radius:3px}
 .modal[hidden],#cmp-bar[hidden],#dec[hidden],#print-sheet[hidden]{display:none!important}
@@ -261,13 +270,13 @@ footer{max-width:1280px;margin:0 auto;padding-block:0 30px;padding-left:max(16px
 <body>
 
 
-<style>#gate,#gate *{box-sizing:border-box}#gate form{margin:0}#gate input,#gate button{display:block;width:100%;min-width:0;margin:0;font-family:inherit;-webkit-appearance:none;appearance:none}#gate input:focus{outline:none;border-color:var(--accent,#0b6b74)!important;background:var(--surface,#fff)!important}</style>
-<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg,#eef1f3);display:flex;align-items:center;justify-content:center;padding:16px">
+<style>#gate,#gate *{box-sizing:border-box}#gate form{margin:0}#gate input,#gate button{display:block;width:100%;min-width:0;margin:0;font-family:inherit;-webkit-appearance:none;appearance:none}#gate input:focus{outline:none;border-color:var(--accent,#1a6fc4)!important;background:var(--surface,#fff)!important}</style>
+<div id="gate" style="position:fixed;inset:0;z-index:100;background:var(--bg,#eaf4fc);display:flex;align-items:center;justify-content:center;padding:16px">
   <form id="gate-f" style="background:var(--surface,#fff);color:var(--ink,#14202b);border:1px solid var(--line,#d5dce2);border-radius:10px;padding:26px 24px;width:100%;max-width:340px;display:grid;gap:12px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.12)">
     <div style="font-size:18px;font-weight:700">THK 카탈로그 검색</div>
     <div style="font-size:13px;color:var(--muted,#5a6876)">태광베어링 | 접근 비밀번호를 입력하세요</div>
     <input id="gate-pw" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••" style="height:44px;font-size:18px;text-align:center;border:1.5px solid var(--line,#d5dce2);border-radius:8px;background:var(--sunk,#f6f8f9);color:inherit">
-    <button type="submit" style="height:44px;border:0;border-radius:8px;background:var(--accent,#0b6b74);color:#fff;font-weight:700;font-size:15px">확인</button>
+    <button type="submit" style="height:44px;border:0;border-radius:8px;background:var(--accent,#1a6fc4);color:#fff;font-weight:700;font-size:15px">확인</button>
     <div id="gate-err" style="font-size:13px;color:#b3261e;min-height:1em"></div>
   </form>
 </div>
@@ -292,7 +301,7 @@ footer{max-width:1280px;margin:0 auto;padding-block:0 30px;padding-left:max(16px
   <section id="dec" hidden></section>
   <section id="viewer" hidden></section>
 </main>
-<footer>원본: THK·삼익THK 카탈로그 PDF 31개에서 추출. <a href="사용%20안내.pdf" target="_blank" rel="noopener">사용 안내(PDF)</a> · 표의 숫자는 PDF에서 자동으로 뽑은 값이라, 노란색으로 표시된 원본 줄과 대조해 확인하세요. 스캔본(OCR) 페이지는 글자 인식 오류가 있을 수 있습니다.</footer>
+<footer>원본: THK·삼익THK 카탈로그 PDF 31개에서 추출. <a href="사용%20안내.pdf" target="_blank" rel="noopener">사용 안내(PDF)</a> · 표의 숫자는 PDF에서 자동으로 뽑은 값이라, 노란색으로 표시된 원본 줄과 대조해 확인하세요. 스캔본(OCR) 페이지는 글자 인식 오류가 있을 수 있습니다.<div class="rights">ⓒ 2026 태광베어링 · 이 검색 도구의 사용 권한은 태광베어링에 있으며, 허가 없이 복제·배포할 수 없습니다. 카탈로그 내용의 저작권은 THK·삼익THK에 있습니다.</div></footer>
 
 <script>
 (() => {
