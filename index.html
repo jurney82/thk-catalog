@@ -1672,9 +1672,9 @@ document.addEventListener('keydown', e => {
 });
 addEventListener('resize', () => { if(curView!=null) document.body.classList.toggle('viewing', matchMedia('(max-width:979px)').matches); });
 /* ===== 접근 비밀번호 (SHA-256 해시 비교, 원본 비밀번호는 소스에 없음) ===== */
-const PW_HASH = 'cb7593a6adb4b6339f9b0d794acc8903819db9e7c57624a3f0961d085b231999';
+const PW_HASH = '517f3d558b40ec83cc293a15e8b4c9c842b996c8703c92b7c6a319b00c282307';
 async function sha256(t){ const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join(''); }
-function authed(){ try{ if(sessionStorage.getItem('thk_auth')==='1') return true; const t = +localStorage.getItem('thk_auth_t'); return t>0 && Date.now()-t < 30*864e5; }catch(e){ return false; } }
+function authed(){ try{ if(sessionStorage.getItem('thk_auth2')==='1') return true; const t = +localStorage.getItem('thk_auth2_t'); return t>0 && Date.now()-t < 30*864e5; }catch(e){ return false; } }
 function openGate(){ const g = $('#gate'); if(g) g.remove(); load(); }
 if(authed()) openGate();
 else {
@@ -1682,7 +1682,7 @@ else {
   $('#gate-f').addEventListener('submit', async e => {
     e.preventDefault();
     const v = $('#gate-pw').value.trim();
-    if(await sha256(v) === PW_HASH){ try{ sessionStorage.setItem('thk_auth','1'); localStorage.setItem('thk_auth_t', String(Date.now())); }catch(_){} openGate(); }
+    if(await sha256(v) === PW_HASH){ try{ sessionStorage.setItem('thk_auth2','1'); localStorage.setItem('thk_auth2_t', String(Date.now())); }catch(_){} openGate(); }
     else { $('#gate-err').textContent = '비밀번호가 틀렸습니다.'; $('#gate-pw').select(); }
   });
 }
