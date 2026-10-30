@@ -282,7 +282,7 @@ footer{max-width:1280px;margin:0 auto;padding-block:0 30px;padding-left:max(16px
 </div>
 <header>
   <div class="bar">
-    <div class="brand"><h1>THK 카탈로그 검색</h1><span id="meta">태광베어링 사내용</span><button type="button" id="help-btn" class="helpbtn" aria-label="사용 안내">사용 안내</button>
+    <div class="brand"><h1>THK 카탈로그 검색</h1><span id="meta">태광베어링 사내용</span><button type="button" id="help-btn" class="helpbtn" aria-label="사용 안내">사용 안내</button><!--INVITE-START--><button type="button" id="inv-btn" class="helpbtn">고객사 초대</button><!--INVITE-END-->
       <div class="tabs" role="tablist"><button id="t-search" class="on" role="tab">검색</button><button id="t-calc" role="tab">계산기</button><button id="t-dec" role="tab">형번 풀이</button></div>
     </div>
     <div class="qrow" id="qrow">
@@ -1550,6 +1550,49 @@ function openHelp(){
   </div></div>`;
   m.hidden = false;
 }
+/*INVITE-START*/
+/* ======================= 고객사 초대 (고객사용 앱 접근 코드 발급) ======================= */
+const INV_KEY = 'f57a66507ed8176e442410d53d43e266', INV_BASE = 'https://jurney82.github.io/tk-thk/', INV_MAIL = 'adam@bearings.co.kr', INV_AL = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function invNorm(n){ return String(n||'').normalize('NFC').replace(/\(주\)|㈜|주식회사|\s+/g,'').toUpperCase(); }
+async function invCode(name){ const te = new TextEncoder(), k = await crypto.subtle.importKey('raw', te.encode(INV_KEY), {name:'HMAC', hash:'SHA-256'}, false, ['sign']);
+  const b = new Uint8Array(await crypto.subtle.sign('HMAC', k, te.encode('tkc|' + invNorm(name)))); return [...b.slice(0,6)].map(x => INV_AL[x % 32]).join(''); }
+function invLink(name, code){ const b = btoa(String.fromCharCode(...new TextEncoder().encode(name.trim()))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); return `${INV_BASE}#i=${b}.${code}`; }
+function invLog(){ try{ return JSON.parse(localStorage.getItem('thk-inv-log')||'[]'); }catch(e){ return []; } }
+function invText(name, code){ return [`[태광베어링] THK 카탈로그 검색 앱 안내`, ``, `${name} 전용으로 THK·삼익THK 카탈로그 검색, 하중·수명 계산, 형번 풀이를 쓰실 수 있습니다.`, ``, `▶ 바로 열기: ${invLink(name, code)}`, `(처음 한 번 누르면 그 기기에서 30일 동안 자동으로 열립니다)`, ``, `직접 입력할 때 — 고객사명: ${name} / 접근 코드: ${code}`, `휴대폰에서는 「홈 화면에 추가」하면 앱처럼 쓰실 수 있습니다.`, ``, `견적·납기 문의: ${INV_MAIL}`].join('\n'); }
+function invLogHtml(){ const L = invLog(); if(!L.length) return '<p class="hint" style="margin:0">아직 이 기기에서 발급한 기록이 없습니다.</p>';
+  return `<div class="tw"><table class="st"><thead><tr><th>고객사</th><th>코드</th><th>발급일</th><th></th></tr></thead><tbody>${L.map((r,k)=>`<tr><td>${esc(r.n)}</td><td><code>${esc(r.c)}</code></td><td>${esc(r.d)}</td><td><button type="button" class="chip" data-invre="${k}">다시 보기</button></td></tr>`).join('')}</tbody></table></div>`; }
+function openInvite(){
+  let m = $('#inv-modal'); if(!m){ m = document.createElement('div'); m.id = 'inv-modal'; m.className = 'modal'; document.body.appendChild(m); }
+  m.innerHTML = `<div class="mbox" role="dialog" aria-label="고객사 초대" style="grid-template-columns:minmax(0,1fr)"><div class="mhead"><b>고객사 초대 — 고객사용 앱 접근 코드</b><button type="button" class="mx" data-mclose="1" aria-label="닫기">×</button></div>
+    <p class="hint" style="margin:0 0 8px">업체명을 넣으면 그 고객사 전용 접근 코드와 초대 링크가 바로 만들어집니다. 안내문을 복사해 카톡·문자로 보내세요. 같은 업체명은 언제 만들어도 같은 코드가 나옵니다 (띄어쓰기·(주)는 무시).</p>
+    <div class="fld wide"><label for="inv-name">업체명</label><input id="inv-name" placeholder="예: ○○테크" autocomplete="off"></div>
+    <div id="inv-out" style="margin-top:10px"></div>
+    <div class="sec-h" style="margin-top:14px"><span>이 기기에서 발급한 기록</span></div><div id="inv-log">${invLogHtml()}</div>
+    <p class="hint" style="margin:8px 0 0">거래가 끊긴 고객사의 접속을 막으려면 Claude에게 「○○ 접속 차단」을 요청하세요. 고객사 화면에서 들어오는 견적 문의는 ${esc(INV_MAIL)}로 옵니다.</p></div>`;
+  m.hidden = false; setTimeout(() => $('#inv-name').focus(), 30);
+}
+async function invShow(name, save){
+  name = String(name||'').trim(); const out = $('#inv-out'); if(!out) return;
+  if(!invNorm(name)){ out.innerHTML = ''; return; }
+  const code = await invCode(name);
+  out.innerHTML = `<div class="ans" style="padding:10px 12px"><div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap"><span class="hint">접근 코드</span><b style="font-size:24px;letter-spacing:3px;font-family:Consolas,monospace">${code}</b></div>
+    <textarea id="inv-text" rows="10" style="width:100%;box-sizing:border-box;margin-top:8px;font:inherit;font-size:13.5px;line-height:1.5;border:1.5px solid var(--line);border-radius:var(--r);padding:8px 10px;background:var(--sunk);color:var(--ink)">${esc(invText(name, code))}</textarea>
+    <div class="porow" style="margin-top:6px"><button type="button" class="pobtn" id="inv-copy">안내문 복사</button><a class="sbtn" style="display:inline-flex;align-items:center;text-decoration:none" href="${invLink(name, code)}" target="_blank" rel="noopener">고객 화면 열어 보기</a><span class="hint" id="inv-msg"></span></div></div>`;
+  if(save){ const L = invLog().filter(r => invNorm(r.n) !== invNorm(name)); L.unshift({n:name, c:code, d:today('-')}); try{ localStorage.setItem('thk-inv-log', JSON.stringify(L.slice(0,200))); }catch(e){} const lg = $('#inv-log'); if(lg) lg.innerHTML = invLogHtml(); }
+}
+let invT;
+document.addEventListener('input', e => { if(e.target.id==='inv-name'){ clearTimeout(invT); const v = e.target.value; invT = setTimeout(() => invShow(v, false), 250); } });
+document.addEventListener('click', async e => {
+  const b = e.target.closest && e.target.closest('button'); if(!b) return;
+  if(b.id==='inv-btn'){ openInvite(); return; }
+  if(b.dataset.invre!==undefined){ const r = invLog()[+b.dataset.invre]; if(r){ $('#inv-name').value = r.n; invShow(r.n, false); } return; }
+  if(b.id==='inv-copy'){ const ta = $('#inv-text'), msg = $('#inv-msg'); let ok = false;
+    try{ await navigator.clipboard.writeText(ta.value); ok = true; }catch(_){}
+    if(!ok){ try{ ta.focus(); ta.select(); ok = document.execCommand('copy'); }catch(_){} }
+    msg.textContent = ok ? '복사했습니다. 카톡·문자에 붙여 넣으세요.' : '자동 복사가 막혀 있습니다. 글을 길게 눌러 복사하세요.';
+    invShow($('#inv-name').value, true); }
+});
+/*INVITE-END*/
 /* ======================= events ======================= */
 let tmr, ctmr;
 $('#q').addEventListener('input', e => { clearTimeout(tmr); const v = e.target.value; tmr = setTimeout(()=>run(v), 280); });
